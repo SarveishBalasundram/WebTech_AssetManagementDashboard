@@ -9,10 +9,14 @@ import {
   Edit
 } from '@element-plus/icons-vue';
 import '../assets/dashboard.css';
+
 // Add these imports
+import VueApexCharts from 'vue3-apexcharts'
 import AssetDistribution from './chart/AssetDistribution.vue'
 import AssetByCategory from './chart/AssetByCategory.vue'
-import VueApexCharts from 'vue3-apexcharts'
+import AssetStatusTable from './chart/AssetStatusTable.vue'
+import EditAssetStatus from './modal/EditAssetStatus.vue'
+
 
 // Register the ApexCharts component
 const apexchart = VueApexCharts
@@ -29,6 +33,7 @@ const emit = defineEmits(['update-asset'])
 const handleAssetUpdate = (updatedAsset) => {
   emit('update-asset', updatedAsset)
 }
+
 </script>
 
 <template>
@@ -112,8 +117,14 @@ const handleAssetUpdate = (updatedAsset) => {
         </el-card>
       </el-col>
     </el-row>
+ 
     <el-row :gutter="20" class="mb-6">
-      <el-col :xs="24" :sm="12" :md="8" v-for="(graph, index) in 3" :key="index">
+      <el-col :xs="24" :sm="12">
+        <!-- Status Summary Table -->
+        <AssetStatusTable :assets="assetData.assets"  :departments="assetData.departments"
+         @update-assets="assetData.assets = $event" />
+       </el-col>
+       <el-col :xs="24" :sm="12" :md="8" v-for="(graph, index) in 3" :key="index">
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '300px' }">
           <h3 class="text-lg font-semibold mb-4">Graph {{ index + 3 }}</h3>
           <!-- Graph placeholder -->
@@ -123,23 +134,10 @@ const handleAssetUpdate = (updatedAsset) => {
         </el-card>
       </el-col>
     </el-row>
-    <div class="mb-6">
-    <el-card shadow="hover" :body-style="{ padding: '20px' }">
-      <div class="flex justify-between items-center mb-4">
-        <!-- Left: Document Icon + Title -->
-        <div class="flex items-center gap-2">
-          <h3 class="text-lg font-semibold m-0">Asset Status Summary</h3>
-        </div>
-      </div>
-      <!-- Status Table -->
-      <!-- <el-table :data="Object.entries(statusCounts)" style="width: 100%">
-        <el-table-column prop="0" label="Status" />
-        <el-table-column prop="1" label="Count" />
-      </el-table> -->
-    </el-card>
+  
 
-    <!-- Table Cards - 2 per row -->
-    <el-row :gutter="20" class="mb-6">
+     <!-- Table Cards - 2 per row -->
+     <el-row :gutter="20" class="mb-6">
       <el-col :xs="24" :sm="12" v-for="(table, index) in 2" :key="index">
         <el-card shadow="hover" :body-style="{ padding: '20px' }">
           <h3 class="text-lg font-semibold mb-4">Table {{ index + 1 }}</h3>
@@ -151,6 +149,4 @@ const handleAssetUpdate = (updatedAsset) => {
       </el-col>
     </el-row>
   </div>
-  </div>
 </template>
-
