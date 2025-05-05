@@ -22,6 +22,10 @@ const updateAsset = (updatedAsset) => {
     // Update the department in the original asset
     rawAssets.value[index].department = updatedAsset.newDepartment
   }
+  // Handle purchase date updates (from AssetBreakdown)
+  if (updatedAsset.purchaseDate) {
+    rawAssets.value[index].purchaseDate = updatedAsset.purchaseDate
+  }
 }
 </script>
 
@@ -31,11 +35,7 @@ const updateAsset = (updatedAsset) => {
     <el-header height="60px" class="app-header">
       <div class="header-content">
         <div class="logo-section">
-          <img 
-            src="/images/companyLogo.png" 
-            class="logo"
-            alt="Company Logo"
-          >
+          <img src="/images/companyLogo.png" class="logo" alt="Company Logo">
         </div>
         <h1 class="title">DIGITAL ASSET MANAGEMENT SYSTEM</h1>
       </div>
@@ -43,13 +43,7 @@ const updateAsset = (updatedAsset) => {
 
     <!-- MAIN CONTENT -->
     <el-main class="app-main">
-      <Dashboard 
-        :assetData="assetData" 
-        @update-asset="updateAsset"
-      />
+      <Dashboard :assetData="assetData" @update-asset="updateAsset" />
     </el-main>
   </el-container>
 </template>
-
-
-
