@@ -17,6 +17,9 @@ import AssetByCategory from './chart/AssetByCategory.vue'
 import AssetStatusTable from './chart/AssetStatusTable.vue'
 import EditAssetStatus from './modal/EditAssetStatus.vue'
 import AssetBreakdown from './chart/AssetBreakdown.vue'
+import AssetValueByDept from './chart/AssetValueByDept.vue'
+import EditAssetValue from './modal/EditAssetValue.vue'
+import WarrantyExpiryTable from './chart/WarrantyExpiryTable.vue'
 
 
 // Register the ApexCharts component
@@ -101,6 +104,10 @@ const handleAssetUpdate = (updatedAsset) => {
           <AssetDistribution :assetData="assetData" @update-asset="handleAssetUpdate" />
           <AssetBreakdown :assetData="assetData" @update-asset="handleAssetUpdate" />
         </el-card>
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+          <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
+          <AssetValueByDept :assetData="assetData" @update-asset="handleAssetUpdate" />
+        </el-card>
       </el-col>
       <el-col :xs="24" :sm="12">
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
@@ -112,6 +119,11 @@ const handleAssetUpdate = (updatedAsset) => {
           <h3 class="text-lg font-semibold mb-4">Asset Status Summary</h3>
           <AssetStatusTable :assets="assetData.assets" :departments="assetData.departments"
             @update-assets="assetData.assets = $event" />
+        </el-card>
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+          <h3 class="text-lg font-semibold mb-4">Upcoming Warranty Expiry</h3>
+          <WarrantyExpiryTable :assets="assetData.assets" :departments="assetData.departments"
+            @update-asset="handleAssetUpdate" />
         </el-card>
       </el-col>
     </el-row>
@@ -132,6 +144,15 @@ const handleAssetUpdate = (updatedAsset) => {
         </el-card>
       </el-col>
     </el-row>-->
+
+    <!-- <el-row :gutter="20" class="mb-6">
+      <el-col :xs="24">
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '350px' }">
+          <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
+          <AssetValueByDept :assetData="assetData" @update-asset="handleAssetUpdate" />
+        </el-card>
+      </el-col>
+    </el-row> -->
 
 
     <!-- Table Cards - 2 per row -->

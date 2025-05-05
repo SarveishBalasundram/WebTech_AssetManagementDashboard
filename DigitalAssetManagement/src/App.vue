@@ -19,12 +19,39 @@ const assetData = ref({
 const updateAsset = (updatedAsset) => {
   const index = rawAssets.value.findIndex(a => a.id === updatedAsset.id)
   if (index !== -1) {
-    // Update the department in the original asset
-    rawAssets.value[index].department = updatedAsset.newDepartment
-  }
-  // Handle purchase date updates (from AssetBreakdown)
-  if (updatedAsset.purchaseDate) {
-    rawAssets.value[index].purchaseDate = updatedAsset.purchaseDate
+    // Update the asset properties based on what's provided in updatedAsset
+    
+    // Handle department update
+    if (updatedAsset.newDepartment) {
+      rawAssets.value[index].department = updatedAsset.newDepartment
+    }
+    
+    // Handle value update
+    if (updatedAsset.value !== undefined) {
+      rawAssets.value[index].value = updatedAsset.value
+      
+      // Store reason if provided
+      if (updatedAsset.valueChangeReason) {
+        rawAssets.value[index].valueChangeReason = updatedAsset.valueChangeReason
+      }
+    }
+
+    // Handle value update
+    if (updatedAsset.warrantyExpiry !== undefined) {
+      rawAssets.value[index].warrantyExpiry = updatedAsset.warrantyExpiry
+      
+      // Store reason if provided
+      if (updatedAsset.valueChangeReason) {
+        rawAssets.value[index].valueChangeReason = updatedAsset.valueChangeReason
+      }
+    }
+    
+    // Handle purchase date updates
+    if (updatedAsset.purchaseDate) {
+      rawAssets.value[index].purchaseDate = updatedAsset.purchaseDate
+    }
+
+    // NOTE: You can add more property updates here as needed
   }
 }
 </script>
