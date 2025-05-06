@@ -1,10 +1,5 @@
 <template>
-    <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
-      <!-- Header -->
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold m-0">Asset Status Summary</h3>
-      </div>
-  
+   
       <!-- Department Filter and Edit Button -->
       <div class="flex items-center justify-between mb-4">
         <el-select
@@ -65,7 +60,7 @@
         :usage-types="usageTypes"
         @update-assets="updatedAssets => emit('update-assets', updatedAssets)"
       />
-    </el-card>
+
   </template>
   
   <script setup>
