@@ -29,21 +29,11 @@ const updateAsset = (updatedAsset) => {
     // Handle value update
     if (updatedAsset.value !== undefined) {
       rawAssets.value[index].value = updatedAsset.value
-      
-      // Store reason if provided
-      if (updatedAsset.valueChangeReason) {
-        rawAssets.value[index].valueChangeReason = updatedAsset.valueChangeReason
-      }
     }
 
-    // Handle value update
+    // Handle warranty expiry update
     if (updatedAsset.warrantyExpiry !== undefined) {
       rawAssets.value[index].warrantyExpiry = updatedAsset.warrantyExpiry
-      
-      // Store reason if provided
-      if (updatedAsset.valueChangeReason) {
-        rawAssets.value[index].valueChangeReason = updatedAsset.valueChangeReason
-      }
     }
     
     // Handle purchase date updates

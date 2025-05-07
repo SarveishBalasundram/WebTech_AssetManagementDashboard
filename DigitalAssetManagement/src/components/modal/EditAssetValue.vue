@@ -49,15 +49,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-
-      <el-row :gutter="20">
-        <el-col :span="24">
-          <el-form-item label="Reason for Value Change" prop="reason">
-            <el-input v-model="formData.reason" type="textarea" :rows="2"
-              placeholder="Enter reason for value update (optional)" />
-          </el-form-item>
-        </el-col>
-      </el-row>
     </el-form>
 
     <template #footer>
@@ -101,8 +92,7 @@ const formData = ref({
   name: '',
   category: '',
   currentValue: '',
-  newValue: 0,
-  reason: ''
+  newValue: 0
 })
 
 // Compute if form is valid
@@ -130,8 +120,7 @@ const handleAssetChange = (assetId) => {
       name: selectedAsset.name || '',
       category: selectedAsset.category || '',
       currentValue: selectedAsset.value || 0,
-      newValue: selectedAsset.value || 0,
-      reason: ''
+      newValue: selectedAsset.value || 0
     }
   }
 }
@@ -141,8 +130,7 @@ const resetFormData = () => {
     name: '',
     category: '',
     currentValue: '',
-    newValue: 0,
-    reason: ''
+    newValue: 0
   }
 }
 
@@ -176,8 +164,7 @@ const submitForm = () => {
   // Create updatedAsset with ALL original properties plus the updated ones
   const updatedAsset = {
     ...originalAsset,  // Preserve all original properties
-    value: formData.value.newValue,
-    valueChangeReason: formData.value.reason || 'Value updated'
+    value: formData.value.newValue
   }
 
   emit('submit', updatedAsset)
