@@ -15,12 +15,10 @@ import VueApexCharts from 'vue3-apexcharts'
 import AssetDistribution from './chart/AssetDistribution.vue'
 import AssetByCategory from './chart/AssetByCategory.vue'
 import AssetStatusTable from './chart/AssetStatusTable.vue'
-import EditAssetStatus from './modal/EditAssetStatus.vue'
 import AssetBreakdown from './chart/AssetBreakdown.vue'
 import AssetValueByDept from './chart/AssetValueByDept.vue'
-import EditAssetValue from './modal/EditAssetValue.vue'
 import WarrantyExpiryTable from './chart/WarrantyExpiryTable.vue'
-
+import TotalAssetValueByUsageChart from './chart/TotalAssetValueByUsageChart.vue';
 
 // Register the ApexCharts component
 const apexchart = VueApexCharts
@@ -96,6 +94,7 @@ const handleAssetUpdate = (updatedAsset) => {
       </el-col>
     </el-row>
 
+
     <el-row :gutter="20" class="mb-6">
       <!-- In your dashboard.vue, replace the Asset Distribution card with this: -->
       <el-col :xs="24" :sm="12">
@@ -108,7 +107,13 @@ const handleAssetUpdate = (updatedAsset) => {
           <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
           <AssetValueByDept :assetData="assetData" @update-asset="handleAssetUpdate" />
         </el-card>
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+          <TotalAssetValueByUsageChart :assetData="assetData" />
+        </el-card>
+
       </el-col>
+
+      
       <el-col :xs="24" :sm="12">
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
           <h3 class="text-lg font-semibold mb-4">Status Overview</h3>
@@ -125,47 +130,9 @@ const handleAssetUpdate = (updatedAsset) => {
           <WarrantyExpiryTable :assets="assetData.assets" :departments="assetData.departments"
             @update-asset="handleAssetUpdate" />
         </el-card>
+        
       </el-col>
     </el-row>
 
-    <!--<el-row :gutter="20" class="mb-6">
-      <el-col :xs="24" :sm="12">-->
-    <!-- Status Summary Table -->
-    <!-- <AssetStatusTable :assets="assetData.assets" :departments="assetData.departments"
-          @update-assets="assetData.assets = $event" />
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="8" v-for="(graph, index) in 3" :key="index">
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '300px' }">
-          <h3 class="text-lg font-semibold mb-4">Graph {{ index + 3 }}</h3>-->
-    <!-- Graph placeholder -->
-    <!--<div class="h-full flex items-center justify-center bg-gray-100 rounded">
-            <span class="text-gray-400">Graph {{ index + 3 }} Placeholder</span>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>-->
-
-    <!-- <el-row :gutter="20" class="mb-6">
-      <el-col :xs="24">
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '350px' }">
-          <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
-          <AssetValueByDept :assetData="assetData" @update-asset="handleAssetUpdate" />
-        </el-card>
-      </el-col>
-    </el-row> -->
-
-
-    <!-- Table Cards - 2 per row -->
-    <el-row :gutter="20" class="mb-6">
-      <el-col :xs="24" :sm="12" v-for="(table, index) in 2" :key="index">
-        <el-card shadow="hover" :body-style="{ padding: '20px' }">
-          <h3 class="text-lg font-semibold mb-4">Table {{ index + 1 }}</h3>
-          <!-- Table placeholder -->
-          <div class="h-64 flex items-center justify-center bg-gray-100 rounded">
-            <span class="text-gray-400">Table {{ index + 1 }} Placeholder</span>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
   </div>
 </template>
