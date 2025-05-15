@@ -37,7 +37,6 @@
       height="300"
       :options="chartOptions"
       :series="series"
-      @barClick="handleBarClick"
     />
 
     <EditAssetDept
@@ -54,7 +53,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
-import VueApexCharts from 'vue3-apexcharts'
 import EditAssetDept from '../modal/EditAssetDept.vue'
 
 const props = defineProps({
@@ -83,6 +81,7 @@ const filteredAssets = computed(() => {
   )
 })
 
+//Defining the series that will be used for the BarChart
 const series = computed(() => {
   const categories = props.assetData.categories || []
   const departments = selectedDepartments.value.length > 0 
@@ -101,6 +100,7 @@ const series = computed(() => {
   })
 })
 
+ // Prepare BarChart Options
 const chartOptions = computed(() => ({
   chart: {
     type: 'bar',
@@ -160,24 +160,6 @@ const chartOptions = computed(() => ({
 const editModalVisible = ref(false)
 const currentAsset = ref({})
 
-const handleBarClick = (event, chartContext, config) => {
-  if (config.dataPointIndex !== undefined) {
-    const category = config.seriesName
-    const department = config.w.config.xaxis.categories[config.dataPointIndex]
-    
-    const clickedAsset = props.assetData.assets.find(asset => 
-      asset.category === category && asset.department === department
-    )
-    
-    if (clickedAsset) {
-      currentAsset.value = {
-        ...clickedAsset,
-        purchaseDate: clickedAsset.purchaseDate || new Date()
-      }
-      editModalVisible.value = true
-    }
-  }
-}
 
 const openEditModal = () => {
   currentAsset.value = props.assetData.assets.length > 0 

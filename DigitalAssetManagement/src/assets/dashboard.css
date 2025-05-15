@@ -28,3 +28,14 @@
   margin-top: auto;
   text-align: right;
 }
+
+.dashboard-card {
+  margin-bottom: 24px;
+}
+
+.dashboard-card:last-child {
+  margin-bottom: 0;
+}
+.dashboard-section{
+  margin-top: 15px;
+}

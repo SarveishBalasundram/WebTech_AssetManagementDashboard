@@ -9,8 +9,6 @@ import {
   Edit
 } from '@element-plus/icons-vue';
 import '../assets/dashboard.css';
-
-// Add these imports
 import VueApexCharts from 'vue3-apexcharts'
 import AssetDistribution from './chart/AssetDistribution.vue'
 import AssetByCategory from './chart/AssetByCategory.vue'
@@ -20,7 +18,7 @@ import AssetValueByDept from './chart/AssetValueByDept.vue'
 import WarrantyExpiryTable from './chart/WarrantyExpiryTable.vue'
 import TotalAssetValueByUsageChart from './chart/TotalAssetValueByUsageChart.vue';
 
-// Register the ApexCharts component
+// Register the ApexCharts component into the Dashboard 
 const apexchart = VueApexCharts
 defineProps({
   assetData: {
@@ -46,7 +44,7 @@ const handleAssetUpdate = (updatedAsset) => {
       <el-divider />
     </div>
 
-    <!-- Summary Cards - 2 cards per row -->
+    <!-- Summary Cards - First Row -->
     <el-row :gutter="20" class="mb-6">
       <el-col :xs="24" :sm="12" v-for="(stat, index) in [
         { title: 'Total Assets', value: assetData.assets.length, icon: Collection, color: 'primary', isCurrency: false },
@@ -70,8 +68,8 @@ const handleAssetUpdate = (updatedAsset) => {
       </el-col>
     </el-row>
 
-    <!-- Second Row of Summary Cards -->
-    <el-row :gutter="20" class="mb-6">
+    <!-- Summary Cards - Second Row -->
+    <el-row :gutter="20" class="mb-10">
       <el-col :xs="24" :sm="12" v-for="(stat, index) in [
         { title: 'Departments', value: assetData.departments.length, icon: OfficeBuilding, color: 'warning', isCurrency: false },
         { title: 'Total Value', value: assetData.totalValue, icon: Money, color: 'danger', isCurrency: true }
@@ -94,45 +92,49 @@ const handleAssetUpdate = (updatedAsset) => {
       </el-col>
     </el-row>
 
-
-    <el-row :gutter="20" class="mb-6">
-      <!-- In your dashboard.vue, replace the Asset Distribution card with this: -->
+    <!-- Chart Section -->
+    <el-row :gutter="20" class="dashboard-section">
       <el-col :xs="24" :sm="12">
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+        <!-- Chart for displaying asset quantity based on department --> 
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Distribution</h3>
           <AssetDistribution :assetData="assetData" @update-asset="handleAssetUpdate" />
-          <AssetBreakdown :assetData="assetData" @update-asset="handleAssetUpdate" />
         </el-card>
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
+          <h3 class="text-lg font-semibold mb-4">Asset Distribution</h3>
+            <AssetBreakdown :assetData="assetData" @update-asset="handleAssetUpdate" />
+        </el-card>
+
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
           <AssetValueByDept :assetData="assetData" @update-asset="handleAssetUpdate" />
         </el-card>
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+        
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <TotalAssetValueByUsageChart :assetData="assetData" />
         </el-card>
-
       </el-col>
 
-      
       <el-col :xs="24" :sm="12">
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
-          <h3 class="text-lg font-semibold mb-4">Status Overview</h3>
-          <!-- Graph placeholder -->
+        <!-- Chart for displaying asset quantity (percentage) based on category  --> 
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
+          <h3 class="text-lg font-semibold mb-4">Asset Overview</h3>
           <AssetByCategory :assetData="assetData" />
         </el-card>
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+        
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Status Summary</h3>
           <AssetStatusTable :assets="assetData.assets" :departments="assetData.departments"
             @update-assets="assetData.assets = $event" />
         </el-card>
-        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }">
+        
+        <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Upcoming Warranty Expiry</h3>
           <WarrantyExpiryTable :assets="assetData.assets" :departments="assetData.departments"
             @update-asset="handleAssetUpdate" />
         </el-card>
-        
       </el-col>
     </el-row>
-
   </div>
 </template>

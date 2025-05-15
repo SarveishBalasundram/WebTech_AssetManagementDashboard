@@ -131,7 +131,7 @@
     })
   })
   
-  function onStatusChange(asset) {
+  function  onStatusChange(asset) {
     // Handle status change (if needed)
     console.log('Status changed for asset:', asset)
   }

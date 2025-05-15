@@ -24,6 +24,7 @@
     }
   })
   
+  // Setting up the props property to receive the assetData from Dashboard component(parent)
   const props = defineProps({
     assetData: {
       type: Object,

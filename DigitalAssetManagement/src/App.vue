@@ -7,6 +7,7 @@ import './assets/app.css';
 // Use a ref for the raw assets data
 const rawAssets = ref(assets)
 
+// Constructing the rawAssets data to the required structure needed for the dashboard
 const assetData = ref({
   assets: rawAssets,
   categories: categories,
@@ -16,10 +17,10 @@ const assetData = ref({
   assetCount: computed(() => rawAssets.value.length)
 })
 
+// Update the asset properties based on what's provided in updatedAsset
 const updateAsset = (updatedAsset) => {
   const index = rawAssets.value.findIndex(a => a.id === updatedAsset.id)
   if (index !== -1) {
-    // Update the asset properties based on what's provided in updatedAsset
     
     // Handle department update
     if (updatedAsset.newDepartment) {
@@ -40,8 +41,6 @@ const updateAsset = (updatedAsset) => {
     if (updatedAsset.purchaseDate) {
       rawAssets.value[index].purchaseDate = updatedAsset.purchaseDate
     }
-
-    // NOTE: You can add more property updates here as needed
   }
 }
 </script>
