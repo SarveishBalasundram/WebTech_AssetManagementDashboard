@@ -1,7 +1,7 @@
 <template>
-   
       <!-- Department Filter and Edit Button -->
       <div class="flex items-center justify-between mb-4">
+        <!-- Department Filter Dropdown -->
         <el-select
           v-model="selectedDepartments"
           multiple
@@ -11,10 +11,13 @@
           style="width: 50%; margin-right:16px;"
           @change="handleDepartmentChange"
         >
+
+          <!-- Tag shown when all departments are selected -->
           <template #tag>
             <span v-if="isAllSelected" style="color: #888;">&nbsp; All Departments</span>
           </template>
   
+          <!-- Option to select all departments -->
           <el-option label="All Departments" :value="'__ALL__'" />
           <el-option
             v-for="dept in allDepartments"
@@ -24,6 +27,7 @@
           />
         </el-select>
   
+        <!-- Edit Button -->
         <el-button type="primary" @click="showEditModal = true" :icon="Edit">
           Edit
         </el-button>
@@ -69,6 +73,7 @@
   import ApexCharts from 'vue3-apexcharts'
   import EditAssetStatus from '../modal/EditAssetStatus.vue'
   
+  // Props definition
   const props = defineProps({
     modelValue: Boolean,
     assets: Array,
@@ -86,20 +91,26 @@
     }
   })
   
+  // Emit event to parent
   const emit = defineEmits(['update-assets'])
   
+  // Modal visibility
   const showEditModal = ref(false)
   
+  // Extract unique category names from assets
   const categoryList = computed(() =>
     [...new Set(props.assets.map(asset => asset.category))].filter(Boolean)
   )
-  
+
+  // Extract unique department names from assets
   const allDepartments = computed(() =>
     [...new Set(props.assets.map(asset => asset.department))].filter(Boolean)
   )
   
+  // Tracks selected departments for filtering
   const selectedDepartments = ref([])
   
+  //Select all departments by default
   onMounted(() => {
     selectedDepartments.value = [...allDepartments.value]
   })
@@ -109,6 +120,7 @@
     allDepartments.value.every(dept => selectedDepartments.value.includes(dept))
   )
   
+  // Handle change in department dropdown
   const handleDepartmentChange = (value) => {
     const all = '__ALL__'
     if (value.includes(all)) {
@@ -116,10 +128,12 @@
         selectedDepartments.value = [...allDepartments.value]
       }
     } else {
+      // Update selection with current value
       selectedDepartments.value = value
     }
   }
   
+  // Filter assets by selected departments
   const filteredAssets = computed(() => {
     if (selectedDepartments.value.length === 0) {
       return props.assets
@@ -129,6 +143,7 @@
     )
   })
   
+  // Count assets by status
   const calculateStatusCounts = () => {
     const counts = {
       'In Use': 0,
@@ -147,6 +162,7 @@
     return counts
   }
   
+  // Prepare table data for asset status summary
   const statusSummary = computed(() => {
     const counts = calculateStatusCounts()
     return Object.entries(counts).map(([status, count]) => ({
@@ -155,6 +171,7 @@
     }))
   })
   
+  // Extract series data for the donut chart
   const chartSeries = computed(() => {
     const counts = calculateStatusCounts()
     return [
@@ -165,6 +182,7 @@
     ]
   })
   
+  // Donut chart options
   const chartOptions = computed(() => ({
     chart: {
       id: 'asset-status-donut-chart',
@@ -196,6 +214,7 @@
   </script>
   
   <script>
+  // Register the apexchart component globally
   export default {
     components: {
       apexchart: ApexCharts
