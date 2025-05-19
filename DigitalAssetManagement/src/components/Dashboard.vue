@@ -122,7 +122,8 @@ const handleAssetUpdate = (updatedAsset) => {
           <h3 class="text-lg font-semibold mb-4">Asset Overview</h3>
           <AssetByCategory :assetData="assetData" />
         </el-card>
-        
+
+        <!-- Asset Status Summary with Table and Chart-->
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Status Summary</h3>
           <AssetStatusTable :assets="assetData.assets" :departments="assetData.departments"
