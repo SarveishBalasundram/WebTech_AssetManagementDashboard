@@ -9,16 +9,16 @@
           collapse-tags-tooltip
           placeholder="All Departments"
           style="width: 50%; margin-right:16px;"
-          @change="handleDepartmentChange"
+          clearable
         >
 
-          <!-- Tag shown when all departments are selected -->
-          <template #tag>
-            <span v-if="isAllSelected" style="color: #888;">&nbsp; All Departments</span>
-          </template>
-  
-          <!-- Option to select all departments -->
-          <el-option label="All Departments" :value="'__ALL__'" />
+          <el-option
+            label="All Departments"
+            :value="allDepartments"
+            @click="selectAllDepartments"
+            key="all-departments"
+          />
+
           <el-option
             v-for="dept in allDepartments"
             :key="dept"
@@ -26,6 +26,7 @@
             :value="dept"
           />
         </el-select>
+        
   
         <!-- Edit Button -->
         <el-button type="primary" @click="showEditModal = true" :icon="Edit">
@@ -104,46 +105,30 @@
 
   // Extract unique department names from assets
   const allDepartments = computed(() =>
-    [...new Set(props.assets.map(asset => asset.department))].filter(Boolean)
-  )
+  [...new Set(props.assets.map(asset => asset.department))].filter(Boolean)
+)
   
   // Tracks selected departments for filtering
   const selectedDepartments = ref([])
-  
-  //Select all departments by default
-  onMounted(() => {
+
+  // Select all departments when "All Departments" is clicked
+  const selectAllDepartments = () => {
     selectedDepartments.value = [...allDepartments.value]
-  })
-  
-  const isAllSelected = computed(() =>
-    selectedDepartments.value.length === allDepartments.value.length &&
-    allDepartments.value.every(dept => selectedDepartments.value.includes(dept))
-  )
-  
-  // Handle change in department dropdown
-  const handleDepartmentChange = (value) => {
-    const all = '__ALL__'
-    if (value.includes(all)) {
-      if (!isAllSelected.value) {
-        selectedDepartments.value = [...allDepartments.value]
-      }
-    } else {
-      // Update selection with current value
-      selectedDepartments.value = value
-    }
   }
-  
+
   // Filter assets by selected departments
   const filteredAssets = computed(() => {
-    if (selectedDepartments.value.length === 0) {
-      return props.assets
-    }
-    return props.assets.filter(asset =>
-      selectedDepartments.value.includes(asset.department)
-    )
-  })
-  
-  // Count assets by status
+
+  // If no department is selected or "All Departments" is selected, return all
+  if (selectedDepartments.value.length === 0 ) {
+    return props.assets || []
+  }
+  // Filter based on selected departments
+  return (props.assets || []).filter(asset =>
+    selectedDepartments.value.includes(asset.department)
+  )
+})
+    // Count assets by status
   const calculateStatusCounts = () => {
     const counts = {
       'In Use': 0,
