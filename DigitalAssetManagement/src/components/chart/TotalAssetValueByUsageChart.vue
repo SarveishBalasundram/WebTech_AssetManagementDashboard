@@ -1,6 +1,11 @@
 <template>
   <div class="chart-container">
     <h1>Total Asset Value by Usage Type</h1>
+
+    <!-- Edit button -->
+    <button @click="showModal = true" class="edit-button">Edit Usage Type</button>
+
+    <!-- ApexChart displaying asset values grouped by usage type -->
     <apexchart
       type="pie"
       :options="chartOptions"
@@ -8,9 +13,7 @@
       width="500"
     />
 
-    <button @click="showModal = true" class="edit-button">Edit Usage Type</button>
-
-    <!-- Modal -->
+    <!-- Modal component for editing asset usage types -->
     <div v-if="showModal">
       <div class="modal-content">
         <EditUsageType
@@ -36,10 +39,13 @@ export default {
     EditUsageType
   },
   setup() {
+    // Modal visibility state
     const showModal = ref(false)
-    const currentAssets = ref([...assets]) // Make a reactive copy
 
-    // Make all chart data computed from currentAssets
+    // Local reactive copy of the asset list
+    const currentAssets = ref([...assets])
+
+    // Computed map of total value per usage type
     const usageMap = computed(() => {
       const map = {}
       currentAssets.value.forEach(asset => {
@@ -49,8 +55,10 @@ export default {
       return map
     })
 
+    // Chart series values
     const series = computed(() => Object.values(usageMap.value))
-    
+
+    // ApexChart options including dynamic labels
     const chartOptions = computed(() => ({
       labels: Object.keys(usageMap.value),
       legend: {
@@ -69,8 +77,9 @@ export default {
       }]
     }))
 
+    // Called when modal emits updated asset data
     const handleAssetUpdate = (updatedAssets) => {
-      currentAssets.value = updatedAssets // This will trigger all computed properties
+      currentAssets.value = updatedAssets
       showModal.value = false
     }
 
@@ -90,10 +99,11 @@ export default {
   padding: 20px;
 }
 h1 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
+
 .edit-button {
-  margin-top: 20px;
+  margin-bottom: 20px;
   padding: 8px 16px;
   background-color: #3b82f6;
   color: white;
@@ -105,6 +115,8 @@ h1 {
 .edit-button:hover {
   background-color: #2563eb;
 }
+
+/* Modal overlay background */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -117,6 +129,8 @@ h1 {
   align-items: center;
   z-index: 1000;
 }
+
+/* Modal container styling */
 .modal-content {
   background: white;
   padding: 30px;
