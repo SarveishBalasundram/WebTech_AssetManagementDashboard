@@ -1,28 +1,32 @@
 <template>
     <div class="asset-breakdown">
+        <!-- Header section with button to open edit modal -->
         <div class="chart-header flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold">Assets by Purchase Year</h3>
+            <!-- Edit modal button -->
             <el-button type="primary" @click="openEditModal" :icon="Edit" class="update-button">
                 Update Purchase Date
             </el-button>
         </div>
-
         <div v-if="series.length === 0" class="error-message">
             No data available for the chart. Check assetData.assets purchase dates.
         </div>
+        <!-- Render bar chart using VueApexCharts when data is available -->
         <apexchart v-if="series.length > 0" type="bar" height="300" :options="chartOptions" :series="series"
             class="chart-container" />
+        <!-- Modal component for editing asset purchase dates -->
         <EditAssetDate :visible="editModalVisible" @update:visible="val => editModalVisible = val"
             :assets="props.assetData.assets" @submit="handleAssetUpdate" />
     </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { Edit } from '@element-plus/icons-vue'
-import VueApexCharts from 'vue3-apexcharts'
+import { ref, computed, watch } from 'vue' // Import Vue 3 composition API utilities
+import { Edit } from '@element-plus/icons-vue'// Import Edit icon from Element Plus
+import VueApexCharts from 'vue3-apexcharts' // Import Vue wrapper for ApexCharts
 import EditAssetDate from '../modal/EditAssetDate.vue' // Change to '../../modal/EditAssetDate.vue' if in src/modal/
 
+// Define component props to receive asset data
 const props = defineProps({
     assetData: {
         type: Object,
@@ -30,8 +34,10 @@ const props = defineProps({
     },
 })
 
+// Define custom event for emitting asset updates
 const emit = defineEmits(['update-asset'])
 
+// Compute unique purchase years from asset data for chart x-axis
 const purchaseYears = computed(() => {
     const years = new Set(
         props.assetData.assets
@@ -41,6 +47,7 @@ const purchaseYears = computed(() => {
     return [...years].sort()
 })
 
+// Compute series data for the bar chart
 const series = computed(() => [
     {
         name: 'Assets',
@@ -52,6 +59,7 @@ const series = computed(() => [
     },
 ])
 
+// Define chart configuration options for ApexCharts
 const chartOptions = computed(() => ({
     chart: {
         type: 'bar',
@@ -108,6 +116,7 @@ const chartOptions = computed(() => ({
         opacity: 1,
     },
     tooltip: {
+        // Custom tooltip to show year, asset count, and asset names
         custom: ({ series, seriesIndex, dataPointIndex }) => {
             const year = purchaseYears.value[dataPointIndex]
             const assetsInYear = props.assetData.assets
@@ -137,19 +146,21 @@ watch(series, (newSeries) => {
     console.log('CSS Debug: .custom-tooltip font set to Arial')
 })
 
+// Reactive variable to control modal visibility
 const editModalVisible = ref(false)
 
+// Function to open the edit modal
 const openEditModal = () => {
     editModalVisible.value = true
 }
 
+// Handle asset update submission from modal
 const handleAssetUpdate = updatedAsset => {
     emit('update-asset', updatedAsset)
 }
 </script>
 
 <style scoped>
-/* Cache-busting comment: Updated 2025-05-04 */
 .asset-breakdown {
     width: 100%;
     height: 100%;
@@ -191,7 +202,7 @@ const handleAssetUpdate = updatedAsset => {
 </style>
 
 <style>
-/* Global style for tooltip to ensure it applies */
+/* Global style for tooltip*/
 .custom-tooltip {
     padding: 10px 12px;
     background: #e9eff8;
