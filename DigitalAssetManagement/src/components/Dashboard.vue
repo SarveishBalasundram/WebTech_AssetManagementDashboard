@@ -102,7 +102,6 @@ const handleAssetUpdate = (updatedAsset) => {
         </el-card>
 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
-          <h3 class="text-lg font-semibold mb-4">Asset Distribution</h3>
             <AssetBreakdown :assetData="assetData" @update-asset="handleAssetUpdate" />
         </el-card>
 
