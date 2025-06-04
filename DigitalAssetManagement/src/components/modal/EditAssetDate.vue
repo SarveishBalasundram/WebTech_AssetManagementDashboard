@@ -1,6 +1,8 @@
 <template>
+    <!-- Dialog for updating asset purchase date -->
     <el-dialog :model-value="visible" title="Update Asset Purchase Date" width="50%" @close="resetForm"
         @update:model-value="handleVisibilityChange">
+        <!-- Form for selecting asset and purchase date -->
         <el-form :model="formData" label-position="top" ref="formRef">
             <el-row :gutter="20">
                 <el-col :span="24">
@@ -24,6 +26,7 @@
             </el-row>
         </el-form>
 
+        <!-- Dialog footer with action buttons -->
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="close">Cancel</el-button>
@@ -36,32 +39,39 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, computed } from 'vue' // Import Vue 3 composition API utilities
+import { ElMessage } from 'element-plus' // Import Element Plus message component for notifications
 
+// Define component props for dialog visibility and asset data
 const props = defineProps({
     visible: {
         type: Boolean,
-        default: false,
+        default: false, // Dialog is hidden by default
     },
     assets: {
         type: Array,
-        default: () => [],
+        default: () => [], // Default to empty array if no assets provided
     },
 })
 
+// Define custom events for visibility updates and form submission
 const emit = defineEmits(['update:visible', 'submit'])
 
+// Reactive reference to the form element for resetting fields
 const formRef = ref(null)
+// Reactive variable to store selected asset ID
 const selectedAssetId = ref('')
+// Reactive object to store form data (purchase date)
 const formData = ref({
-    purchaseDate: '',
+    purchaseDate: '', // Initialize as empty string
 })
 
+// Handle dialog visibility changes and emit update
 const handleVisibilityChange = value => {
     emit('update:visible', value)
 }
 
+// Update purchase date when an asset is selected
 const handleAssetChange = assetId => {
     const selectedAsset = props.assets.find(asset => asset.id === assetId)
     if (selectedAsset) {
@@ -69,6 +79,7 @@ const handleAssetChange = assetId => {
     }
 }
 
+// Reset form fields and close dialog
 const resetForm = () => {
     selectedAssetId.value = ''
     formData.value.purchaseDate = ''
@@ -76,10 +87,12 @@ const resetForm = () => {
     close()
 }
 
+// Close dialog by emitting visibility update
 const close = () => {
     emit('update:visible', false)
 }
 
+// Handle form submission
 const submitForm = () => {
     if (!selectedAssetId.value) {
         ElMessage.warning('Please select an asset')
@@ -96,6 +109,7 @@ const submitForm = () => {
         purchaseDate: formData.value.purchaseDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
     }
 
+    // Emit updated asset data to parent component
     emit('submit', updatedAsset)
     resetForm()
 }

@@ -1,19 +1,22 @@
 <template>
+    <!-- Dialog Modal for Editing Asset Status -->
     <el-dialog
       :model-value="modelValue"
       title="Edit Asset Status"
       width="80%"
       @update:model-value="val => emit('update:modelValue', val)"
     >
-      <!-- Filters (Element Plus Grid Layout) -->
+      <!-- Filters -->
       <el-row :gutter="20" class="mb-4">
         <el-col :span="7">
+          <!-- Search by asset name -->
           <el-input
             v-model="searchQuery"
             placeholder="Search asset name..."
             clearable
           />
         </el-col>
+        <!-- Filter by category -->
         <el-col :span="5">
           <el-select
             v-model="selectedCategory"
@@ -28,6 +31,8 @@
               :value="category"
             />
           </el-select>
+
+        <!-- Filter by department -->
         </el-col>
         <el-col :span="5">
           <el-select
@@ -45,7 +50,7 @@
           </el-select>
         </el-col>
   
-        <!-- New Usage Type Filter -->
+        <!-- Filter by usage type -->
         <el-col :span="5">
           <el-select
             v-model="selectedUsageType"
@@ -62,17 +67,22 @@
         </el-col>
       </el-row>
   
-      <!-- Table -->
+      <!-- Asset List Table -->
       <div class="asset-list-container" style="margin-top: 20px;">
-      <el-table :data="filteredAssets" style="width: 100%" border height="400" class="bold-table-headers">
+      <el-table :data="filteredAssets" style="width: 100%" height="400" class="bold-table-headers">
+
         <el-table-column prop="name" label="Asset Name" />
         <el-table-column prop="category" label="Category" />
         <el-table-column prop="department" label="Department" />
         <el-table-column prop="usage" label="Usage Type" />
+        
+        <!-- Column for editable status -->
         <el-table-column prop="status" label="Status">
           <template #default="scope">
+
+            <!-- Dropdown to change asset status -->
             <el-select
-              v-model="scope.row.status"
+              v-model="scope.row.status"   
               placeholder="Select"
               @change="onStatusChange(scope.row)"
               size="small"
@@ -88,6 +98,7 @@
       </el-table>
       </div>
   
+      <!-- Modal Footer with Close Button -->
       <template #footer>
         <el-button @click="emit('update:modelValue', false)">Close</el-button>
       </template>
@@ -97,8 +108,14 @@
   <script setup>
   import { ref, computed } from 'vue'
   
+
+  // Props passed from parent component
   const props = defineProps({
+
+    // Controls modal visibility
     modelValue: Boolean,
+
+    // Full list of assets
     assets: Array,
     categories: {
       type: Array,
@@ -106,33 +123,45 @@
     },
     departments: Array
   })
-  
+
+  // Events emitted to parent
   const emit = defineEmits(['update:modelValue', 'filter-assets'])
   
+  // Filter variables for search and dropdowns
   const searchQuery = ref('')
   const selectedCategory = ref('')
   const selectedDepartment = ref('')
   const selectedUsageType = ref('')
   
+  // Computed property to filter assets based on search and selected filters
   const filteredAssets = computed(() => {
     return props.assets.filter(asset => {
+
+      // Check if asset name includes search query
       const matchesSearch = asset.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+
+      // Check if category matches selected one
       const matchesCategory = selectedCategory.value
         ? asset.category === selectedCategory.value
         : true
+
+      // Check if department matches
       const matchesDepartment = selectedDepartment.value
         ? asset.department === selectedDepartment.value
         : true
+
+      // Check if usage type matches  
       const matchesUsageType = selectedUsageType.value
         ? asset.usage === selectedUsageType.value
-        : true  // This matches if no usageType filter is applied
-      
+        : true  
+
+      // Asset must match all filters to be shown
       return matchesSearch && matchesCategory && matchesDepartment && matchesUsageType
     })
   })
   
-  function  onStatusChange(asset) {
-    // Handle status change (if needed)
+  // Called when user changes the status dropdown of an asset
+  function onStatusChange(asset) {
     console.log('Status changed for asset:', asset)
   }
   </script>

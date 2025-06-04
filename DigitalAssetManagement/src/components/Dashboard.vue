@@ -137,8 +137,7 @@ const uniqueDepartmentsCount = computed(() => {
         </el-card>
 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
-          <h3 class="text-lg font-semibold mb-4">Asset Breakdown</h3>
-          <AssetBreakdown :assetData="assetData" />
+            <AssetBreakdown :assetData="assetData" @update-asset="handleAssetUpdate" />
         </el-card>
 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
@@ -156,7 +155,8 @@ const uniqueDepartmentsCount = computed(() => {
           <h3 class="text-lg font-semibold mb-4">Asset Overview</h3>
           <AssetByCategory :assetData="assetData" />
         </el-card>
-        
+
+        <!-- Asset Status Summary with Table and Chart-->
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Status Summary</h3>
           <AssetStatusTable 
