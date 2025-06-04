@@ -13,7 +13,6 @@ try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Route the request based on method and path
     $requestMethod = $_SERVER['REQUEST_METHOD'];
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
@@ -189,49 +188,61 @@ try {
 
         case 'PATCH':
             if (!$id) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Asset ID required']);
-                break;
-            }
+    http_response_code(400);
+    echo json_encode(['error' => 'Asset ID required']);
+    break;
+}
 
-            $input = json_decode(file_get_contents('php://input'), true);
-            
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Invalid JSON input']);
-                break;
-            }
-            
-            if (!isset($input['department'])) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Department field required']);
-                break;
-            }
+$input = json_decode(file_get_contents('php://input'), true);
 
-            $stmt = $pdo->prepare("UPDATE asset SET department = :department WHERE id = :id");
-            $stmt->execute([
-                ':department' => $input['department'],
-                ':id' => $id
-            ]);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid JSON input']);
+    break;
+}
 
-            // Return the updated asset with category name
-            $stmt = $pdo->prepare("
-                SELECT a.*, c.name as category_name 
-                FROM asset a 
-                LEFT JOIN category c ON a.category_id = c.id 
-                WHERE a.id = :id
-            ");
-            $stmt->execute([':id' => $id]);
-            $updatedAsset = $stmt->fetch(PDO::FETCH_ASSOC);
+// Allowed fields to update
+$allowedFields = ['name', 'department', 'status', 'value', 'category_id', 'usage_type', 'purchase_date', 'warranty_expiry'];
+$fieldsToUpdate = [];
+$params = [':id' => $id];
 
-            if ($updatedAsset) {
-                http_response_code(200);
-                echo json_encode($updatedAsset);
-            } else {
-                http_response_code(404);
-                echo json_encode(['error' => 'Asset not found']);
-            }
-            break;
+// Build dynamic query based on allowed input fields
+foreach ($allowedFields as $field) {
+    if (isset($input[$field])) {
+        $fieldsToUpdate[] = "$field = :$field";
+        $params[":$field"] = $input[$field];
+    }
+}
+
+if (empty($fieldsToUpdate)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'No valid fields to update']);
+    break;
+}
+
+// Prepare and execute dynamic update query
+$sql = "UPDATE asset SET " . implode(', ', $fieldsToUpdate) . " WHERE id = :id";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+
+// Return updated asset
+$stmt = $pdo->prepare("
+    SELECT a.*, c.name AS category_name 
+    FROM asset a 
+    LEFT JOIN category c ON a.category_id = c.id 
+    WHERE a.id = :id
+");
+$stmt->execute([':id' => $id]);
+$updatedAsset = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($updatedAsset) {
+    http_response_code(200);
+    echo json_encode($updatedAsset);
+} else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Asset not found']);
+}
+break;
 
         case 'DELETE':
             if (!$id) {
