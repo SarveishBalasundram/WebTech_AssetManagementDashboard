@@ -16,24 +16,57 @@ import AssetStatusTable from './chart/AssetStatusTable.vue'
 import AssetBreakdown from './chart/AssetBreakdown.vue'
 import AssetValueByDept from './chart/AssetValueByDept.vue'
 import WarrantyExpiryTable from './chart/WarrantyExpiryTable.vue'
-import TotalAssetValueByUsageChart from './chart/TotalAssetValueByUsageChart.vue';
+import TotalAssetValueByUsageChart from './chart/TotalAssetValueByUsageChart.vue'
+import { ElNotification } from 'element-plus'
+import { computed } from 'vue'
 
-// Register the ApexCharts component into the Dashboard 
 const apexchart = VueApexCharts
-defineProps({
+
+const props = defineProps({
   assetData: {
     type: Object,
     required: true
   }
 })
 
-const emit = defineEmits(['update-asset'])
+const emit = defineEmits(['update-asset','update-assetDept'])
 
-// Simply forward the event to parent (App.vue)
-const handleAssetUpdate = (updatedAsset) => {
-  emit('update-asset', updatedAsset)
+const handleAssetDeptUpdate = async (updatedAsset) => {
+  try {
+    await emit('update-assetDept', updatedAsset)
+  } catch (error) {
+    console.error('Error handling asset update:', error)
+    ElNotification({
+      title: 'Error',
+      message: 'Failed to update asset department',
+      type: 'error'
+    })
+  }
 }
 
+// Computed property to get unique departments count
+const uniqueDepartmentsCount = computed(() => {
+  if (!props.assetData.departments) return 0;
+  
+  // If departments is an array of unique department names (from API)
+  if (Array.isArray(props.assetData.departments) && 
+      props.assetData.departments.length > 0 && 
+      typeof props.assetData.departments[0] === 'string') {
+    return props.assetData.departments.length;
+  }
+  
+  // If departments contains asset records, get unique department names
+  if (props.assetData.assets && Array.isArray(props.assetData.assets)) {
+    const uniqueDepts = [...new Set(
+      props.assetData.assets
+        .map(asset => asset.department)
+        .filter(dept => dept && dept.trim() !== '')
+    )];
+    return uniqueDepts.length;
+  }
+  
+  return 0;
+})
 </script>
 
 <template>
@@ -71,7 +104,7 @@ const handleAssetUpdate = (updatedAsset) => {
     <!-- Summary Cards - Second Row -->
     <el-row :gutter="20" class="mb-10">
       <el-col :xs="24" :sm="12" v-for="(stat, index) in [
-        { title: 'Departments', value: assetData.departments.length, icon: OfficeBuilding, color: 'warning', isCurrency: false },
+        { title: 'Departments', value: uniqueDepartmentsCount, icon: OfficeBuilding, color: 'warning', isCurrency: false },
         { title: 'Total Value', value: assetData.totalValue, icon: Money, color: 'danger', isCurrency: true }
       ]" :key="index">
         <el-card shadow="hover"
@@ -95,20 +128,22 @@ const handleAssetUpdate = (updatedAsset) => {
     <!-- Chart Section -->
     <el-row :gutter="20" class="dashboard-section">
       <el-col :xs="24" :sm="12">
-        <!-- Chart for displaying asset quantity based on department --> 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Distribution</h3>
-          <AssetDistribution :assetData="assetData" @update-asset="handleAssetUpdate" />
+          <AssetDistribution 
+            :assetData="assetData" 
+            @update-asset="handleAssetDeptUpdate" 
+          />
         </el-card>
 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
-          <h3 class="text-lg font-semibold mb-4">Asset Distribution</h3>
-            <AssetBreakdown :assetData="assetData" @update-asset="handleAssetUpdate" />
+          <h3 class="text-lg font-semibold mb-4">Asset Breakdown</h3>
+          <AssetBreakdown :assetData="assetData" />
         </el-card>
 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
-          <AssetValueByDept :assetData="assetData" @update-asset="handleAssetUpdate" />
+          <AssetValueByDept :assetData="assetData" />
         </el-card>
         
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
@@ -117,7 +152,6 @@ const handleAssetUpdate = (updatedAsset) => {
       </el-col>
 
       <el-col :xs="24" :sm="12">
-        <!-- Chart for displaying asset quantity (percentage) based on category  --> 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Overview</h3>
           <AssetByCategory :assetData="assetData" />
@@ -125,14 +159,18 @@ const handleAssetUpdate = (updatedAsset) => {
         
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Asset Status Summary</h3>
-          <AssetStatusTable :assets="assetData.assets" :departments="assetData.departments"
-            @update-assets="assetData.assets = $event" />
+          <AssetStatusTable 
+            :assets="assetData.assets" 
+            :departments="assetData.departments" 
+          />
         </el-card>
         
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Upcoming Warranty Expiry</h3>
-          <WarrantyExpiryTable :assets="assetData.assets" :departments="assetData.departments"
-            @update-asset="handleAssetUpdate" />
+          <WarrantyExpiryTable 
+            :assets="assetData.assets" 
+            :departments="assetData.departments" 
+          />
         </el-card>
       </el-col>
     </el-row>
