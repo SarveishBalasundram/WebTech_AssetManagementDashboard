@@ -42,6 +42,10 @@ export default {
   },
 
   async updateAsset(id, assetData) {
+    console.log('=== ASSET SERVICE UPDATE ASSET ===')
+  console.log('API Call - ID:', id)
+  console.log('API Call - Data:', assetData)
+  console.log('API Call - URL:', `/assets/${id}`)
     try {
       const response = await apiClient.put(`/assets/${id}`, assetData) // Matches router plural
       return response.data

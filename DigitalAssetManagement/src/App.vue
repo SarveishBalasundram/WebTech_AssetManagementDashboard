@@ -76,8 +76,7 @@ const updateAsset = async (updatedAsset) => {
 const updateAssetDept = async (updatedAsset) => {
   try {
     // Use the standard update method instead of specialized endpoint
-    const updated = await assetService.changeAssetDepartment(updatedAsset.id, updatedAsset.newDepartment
-    )
+    const updated = await assetService.changeAssetDepartment(updatedAsset.id, updatedAsset.newDepartment)
     
     // Update local state
     const index = assetData.value.assets.findIndex(a => a.id === updated.id)
@@ -104,6 +103,40 @@ const updateAssetDept = async (updatedAsset) => {
   }
 }
 
+const updateAssetValue = async (updatedAsset) => {
+  try {
+    // Use the updateAsset method to update the value
+    const updated = await assetService.updateAsset(updatedAsset.id, {
+      value: updatedAsset.value  
+    })
+    
+    // Update local state
+    const index = assetData.value.assets.findIndex(a => a.id === updated.id)
+    if (index !== -1) {
+      assetData.value.assets[index] = updated
+      // Recalculate total value
+      assetData.value.totalValue = assetData.value.assets.reduce(
+        (sum, asset) => sum + (parseFloat(asset.value) || 0), 0
+      )
+      
+      ElNotification({
+        title: 'Success',
+        message: 'Asset value updated successfully',
+        type: 'success'
+      })
+    }
+  } catch (error) {
+    console.error('Error updating asset value:', error)
+    ElNotification({
+      title: 'Error',
+      message: error.response?.data?.error || 'Failed to update asset value',
+      type: 'error'
+    })
+    throw error
+  }
+}
+
+
 // Load data when component mounts
 onMounted(() => {
   fetchData()
@@ -128,6 +161,7 @@ onMounted(() => {
         :assetData="assetData" 
         @update-asset="updateAsset" 
         @update-assetDept="updateAssetDept" 
+        @update-assetValue="updateAssetValue"
       />
     </el-main>
   </el-container>

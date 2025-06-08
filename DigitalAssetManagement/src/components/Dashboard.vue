@@ -29,7 +29,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-asset','update-assetDept'])
+const emit = defineEmits(['update-asset','update-assetDept','update-assetValue'])
 
 const handleAssetDeptUpdate = async (updatedAsset) => {
   try {
@@ -39,6 +39,22 @@ const handleAssetDeptUpdate = async (updatedAsset) => {
     ElNotification({
       title: 'Error',
       message: 'Failed to update asset department',
+      type: 'error'
+    })
+  }
+}
+
+const handleAssetValueUpdate = async (updatedAsset) => {
+  console.log('=== DASHBOARD RECEIVED UPDATE ===')
+  console.log('Updated Asset from Form:', updatedAsset)
+  try {
+    await emit('update-assetValue', updatedAsset)
+    console.log('✅ Dashboard successfully passed update to App.vue')
+  } catch (error) {
+    console.error('Error handling asset value update:', error)
+    ElNotification({
+      title: 'Error',
+      message: 'Failed to update asset value',
       type: 'error'
     })
   }
@@ -142,7 +158,10 @@ const uniqueDepartmentsCount = computed(() => {
 
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
           <h3 class="text-lg font-semibold mb-4">Total Asset Value by Department</h3>
-          <AssetValueByDept :assetData="assetData" />
+          <AssetValueByDept 
+            :assetData="assetData" 
+            @update-asset="handleAssetValueUpdate"
+          />
         </el-card>
         
         <el-card shadow="hover" :body-style="{ padding: '20px', height: '100%' }" class="dashboard-card">
