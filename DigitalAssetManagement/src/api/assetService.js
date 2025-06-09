@@ -43,9 +43,9 @@ export default {
 
   async updateAsset(id, assetData) {
     console.log('=== ASSET SERVICE UPDATE ASSET ===')
-  console.log('API Call - ID:', id)
-  console.log('API Call - Data:', assetData)
-  console.log('API Call - URL:', `/assets/${id}`)
+    console.log('API Call - ID:', id)
+    console.log('API Call - Data:', assetData)
+    console.log('API Call - URL:', `/assets/${id}`)
     try {
       const response = await apiClient.put(`/assets/${id}`, assetData) // Matches router plural
       return response.data
@@ -102,6 +102,20 @@ export default {
       return response.data
     } catch (error) {
       console.error(`Error updating status for asset ${assetId}:`, error)
+      throw error
+    }
+  },
+
+  // Warranty expiry update
+  // Warranty expiry update - Specific endpoint style
+  async updateWarrantyExpiry(assetId, warrantyExpiry) {
+    try {
+      const response = await apiClient.patch(`/assets/${assetId}`, {
+        warranty_expiry: warrantyExpiry,
+      })
+      return response.data
+    } catch (error) {
+      console.error(`Error updating warranty expiry for asset ${assetId}:`, error)
       throw error
     }
   },

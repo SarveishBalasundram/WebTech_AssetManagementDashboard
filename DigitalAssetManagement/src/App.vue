@@ -136,6 +136,36 @@ const updateAssetValue = async (updatedAsset) => {
   }
 }
 
+const updateAssetWarranty = async (updatedAsset) => {
+  try {
+    // Call the correct service function with ID and updated warranty date
+    const updated = await assetService.updateWarrantyExpiry(updatedAsset.id, updatedAsset.warrantyExpiry)
+    
+    // Update local asset state
+    const index = assetData.value.assets.findIndex(a => a.id === updated.id)
+    if (index !== -1) {
+      assetData.value.assets[index] = updated
+      assetData.value.totalValue = assetData.value.assets.reduce(
+        (sum, asset) => sum + (parseFloat(asset.value) || 0), 0
+      )
+
+      ElNotification({
+        title: 'Success',
+        message: 'Warranty expiry updated successfully',
+        type: 'success'
+      })
+    }
+  } catch (error) {
+    console.error('Error updating warranty expiry:', error)
+    ElNotification({
+      title: 'Error',
+      message: error.response?.data?.error || 'Failed to update warranty expiry',
+      type: 'error'
+    })
+    throw error
+  }
+}
+
 
 // Load data when component mounts
 onMounted(() => {
@@ -162,6 +192,7 @@ onMounted(() => {
         @update-asset="updateAsset" 
         @update-assetDept="updateAssetDept" 
         @update-assetValue="updateAssetValue"
+        @update-assetWarranty="updateAssetWarranty"
       />
     </el-main>
   </el-container>

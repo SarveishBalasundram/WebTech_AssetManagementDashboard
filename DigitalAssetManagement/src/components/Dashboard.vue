@@ -29,7 +29,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-asset','update-assetDept','update-assetValue'])
+const emit = defineEmits(['update-asset','update-assetDept','update-assetValue','update-assetWarranty'])
 
 const handleAssetDeptUpdate = async (updatedAsset) => {
   try {
@@ -55,6 +55,22 @@ const handleAssetValueUpdate = async (updatedAsset) => {
     ElNotification({
       title: 'Error',
       message: 'Failed to update asset value',
+      type: 'error'
+    })
+  }
+}
+
+const handleAssetWarrantyUpdate = async (updatedAsset) => {
+  console.log('=== DASHBOARD RECEIVED UPDATE ===')
+  console.log('Updated Asset from Form:', updatedAsset)
+  try {
+    await emit('update-assetWarranty', updatedAsset)
+    console.log('Dashboard successfully passed update to App.vue')
+  } catch (error) {
+    console.error('Error handling asset value update:', error)
+    ElNotification({
+      title: 'Error',
+      message: 'Failed to update warranty value',
       type: 'error'
     })
   }
@@ -189,6 +205,8 @@ const uniqueDepartmentsCount = computed(() => {
           <WarrantyExpiryTable 
             :assets="assetData.assets" 
             :departments="assetData.departments" 
+            :assetData="assetData" 
+            @update-asset="handleAssetWarrantyUpdate"
           />
         </el-card>
       </el-col>
