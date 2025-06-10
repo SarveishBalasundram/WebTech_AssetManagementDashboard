@@ -166,17 +166,38 @@ const selectedStatus = ref('')
 const selectedUsageType = ref('')
 
 // Status management
-
 // Track loading status for specific assets (during update)
 const loadingIds = ref(new Set())
 
 // Status options available for change
-const statusOptions = [
-  { value: 'In Use', label: 'In Use' },
-  { value: 'Storage', label: 'Storage' },
-  { value: 'Under Repair', label: 'Under Repair' },
-  { value: 'Disposal', label: 'Disposal' }
-]
+const statusOptions = ref([])
+
+// Fetch or extract status options
+const getStatusOptions = () => {
+  try {
+    // Try to get from API first
+    if (assetService.getStatusOptions) {
+      return assetService.getStatusOptions()
+    }
+    // Fallback to extracting from assets
+    return [...new Set(props.assets.map(asset => asset.status))]
+  } catch (error) {
+    console.error('Error getting status options:', error)
+    // Final fallback to default options
+    return ['In Use', 'Storage', 'Under Repair', 'Disposal']
+  }
+}
+
+// Initialize status options
+watch(() => props.assets, async (newAssets) => {
+  if (newAssets?.length) {
+    const options = await getStatusOptions()
+    statusOptions.value = options.map(status => ({
+      value: status,
+      label: status
+    }))
+  }
+}, { immediate: true })
 
 // Prepare assets data with newStatus property
 const preparedAssets = computed(() => {
@@ -250,14 +271,40 @@ const resetFilters = () => {
 }
 
 // Define tag style (color) based on current status
+// Dynamic tag colors with caching
+const statusColors = ref({})
 const statusTagType = (status) => {
-  const map = {
+  if (!status) return ''
+  
+  // Return cached color if exists
+  if (statusColors.value[status]) {
+    return statusColors.value[status]
+  }
+
+  // Default mappings
+  const defaultMap = {
     'In Use': 'success',
     'Storage': 'info',
     'Under Repair': 'warning',
-    'Disposal': 'danger'
+    'Disposal': 'danger',
+    'Active': 'success',
+    'Inactive': 'info',
+    'Retired': 'danger'
   }
-  return map[status] || ''
+
+  // Check default mappings first
+  if (defaultMap[status]) {
+    statusColors.value[status] = defaultMap[status]
+    return defaultMap[status]
+  }
+  
+  // Generate consistent color for unknown statuses
+  const hash = status.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  const types = ['', 'success', 'info', 'warning', 'danger']
+  const color = types[hash % types.length] || 'info'
+  statusColors.value[status] = color
+  
+  return color
 }
 
 </script>
