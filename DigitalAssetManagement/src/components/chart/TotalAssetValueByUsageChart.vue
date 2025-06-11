@@ -3,7 +3,7 @@
     <h1>Total Asset Value by Usage Type</h1>
     <button @click="showModal = true" class="edit-button">Edit Usage Type</button>
     
-    <!-- ApexChart（原逻辑不变） -->
+    <!-- ApexChart -->
     <apexchart
       type="pie"
       :options="chartOptions"
@@ -11,7 +11,7 @@
       width="500"
     />
 
-    <!-- 编辑弹窗（对接改造后的组件） -->
+    <!-- Edit Modal  -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
         <EditUsageType
@@ -33,11 +33,11 @@ import VueApexCharts from 'vue3-apexcharts';
 import assetService from '../../api/assetService';
 import EditUsageType from '../modal/EditUsageType.vue';
 
-// 弹窗控制（原逻辑不变）
+// Modal Control
 const showModal = ref(false);
 
 
-// 分类/部门数据（原逻辑不变，或替换为接口）
+// Category/Department Data
 
 const currentAssets = ref([]);
 const categories = ref([]);
@@ -55,7 +55,7 @@ onMounted(async () => {
   }
 });
 
-// 图表计算（原逻辑不变）
+// Chart Calculation
 const usageMap = computed(() => {
   const map = {};
   currentAssets.value.forEach(asset => {
@@ -82,7 +82,7 @@ const chartOptions = computed(() => ({
   ]
 }));
 
-// 资产更新回调（原逻辑不变）
+// Asset Update Callback
 const handleAssetUpdate = (updatedAssets) => {
   currentAssets.value = updatedAssets;
   showModal.value = false;
