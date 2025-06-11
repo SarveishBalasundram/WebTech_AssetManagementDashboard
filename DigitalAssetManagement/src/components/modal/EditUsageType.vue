@@ -6,7 +6,7 @@
     @update:model-value="(val) => emit('update:modelValue', val)"
   >
     <!-- Filter section -->
-        <!-- 筛选区域 -->
+        <!-- Filter Area -->
         <el-row :gutter="20" class="mb-4">
       <el-col :span="7">
         <el-input
@@ -115,7 +115,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'asset-updated'])
 
 
-// ✅ Log assets when component mounts
+//  Log assets when component mounts
 onMounted(() => {
   console.log('Assets received from API:', props.assets)
 })
