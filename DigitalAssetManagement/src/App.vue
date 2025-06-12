@@ -166,6 +166,32 @@ const updateAssetWarranty = async (updatedAsset) => {
   }
 }
 
+// Update asset purchase date
+const updateAssetDate = async (updatedAsset) => {
+  try {
+    const updated = await assetService.updateAssetPurchaseDate(updatedAsset.id, updatedAsset.purchase_date)
+    const index = assetData.value.assets.findIndex(a => a.id === updated.id)
+    if (index !== -1) {
+      assetData.value.assets.splice(index, 1, updated)
+      assetData.value.totalValue = assetData.value.assets.reduce(
+        (sum, asset) => sum + (parseFloat(asset.value) || 0), 0
+      )
+      ElNotification({
+        title: 'Success',
+        message: 'Purchase date updated successfully',
+        type: 'success'
+      })
+    }
+  } catch (error) {
+    console.error('Error updating asset purchase date:', error)
+    ElNotification({
+      title: 'Error',
+      message: error.response?.data?.error || 'Failed to update purchase date',
+      type: 'error'
+    })
+    throw error
+  }
+}
 
 // Load data when component mounts
 onMounted(() => {
@@ -193,6 +219,7 @@ onMounted(() => {
         @update-assetDept="updateAssetDept" 
         @update-assetValue="updateAssetValue"
         @update-assetWarranty="updateAssetWarranty"
+        @update-assetDate="updateAssetDate"
       />
     </el-main>
   </el-container>

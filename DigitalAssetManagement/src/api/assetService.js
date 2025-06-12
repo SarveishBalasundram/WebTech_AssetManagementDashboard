@@ -119,7 +119,18 @@ export default {
       throw error
     }
   },
-
+ // Purchase date update
+  async updateAssetPurchaseDate(assetId, purchaseDate) {
+    try {
+      const response = await apiClient.patch(`/assets/${assetId}`, {
+        purchase_date: purchaseDate,
+      })
+      return response.data
+    } catch (error) {
+      console.error(`Error updating purchase date for asset ${assetId}:`, error)
+      throw error
+    }
+  },
   // Partial update for any field
   async updateAssetField(assetId, fieldData) {
     try {

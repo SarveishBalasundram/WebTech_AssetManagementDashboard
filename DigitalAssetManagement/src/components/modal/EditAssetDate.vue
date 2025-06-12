@@ -1,3 +1,4 @@
+```vue
 <template>
     <!-- Dialog for updating asset purchase date -->
     <el-dialog :model-value="visible" title="Update Asset Purchase Date" width="50%" @close="resetForm"
@@ -18,8 +19,8 @@
 
             <el-row :gutter="20">
                 <el-col :span="24">
-                    <el-form-item label="Purchase Date" prop="purchaseDate">
-                        <el-date-picker v-model="formData.purchaseDate" type="date" placeholder="Select date"
+                    <el-form-item label="Purchase Date" prop="purchase_date">
+                        <el-date-picker v-model="formData.purchase_date" type="date" placeholder="Select date"
                             style="width: 100%" />
                     </el-form-item>
                 </el-col>
@@ -39,34 +40,32 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue' // Import Vue 3 composition API utilities
-import { ElMessage } from 'element-plus' // Import Element Plus message component for notifications
+import { ref, computed } from 'vue'
+import { ElMessage } from 'element-plus'
 
-// Define component props for dialog visibility and asset data
+// Define component props
 const props = defineProps({
     visible: {
         type: Boolean,
-        default: false, // Dialog is hidden by default
+        default: false,
     },
     assets: {
         type: Array,
-        default: () => [], // Default to empty array if no assets provided
+        default: () => [],
     },
 })
 
-// Define custom events for visibility updates and form submission
+// Define emits
 const emit = defineEmits(['update:visible', 'submit'])
 
-// Reactive reference to the form element for resetting fields
+// Reactive references
 const formRef = ref(null)
-// Reactive variable to store selected asset ID
 const selectedAssetId = ref('')
-// Reactive object to store form data (purchase date)
 const formData = ref({
-    purchaseDate: '', // Initialize as empty string
+    purchase_date: '',
 })
 
-// Handle dialog visibility changes and emit update
+// Handle dialog visibility changes
 const handleVisibilityChange = value => {
     emit('update:visible', value)
 }
@@ -75,19 +74,19 @@ const handleVisibilityChange = value => {
 const handleAssetChange = assetId => {
     const selectedAsset = props.assets.find(asset => asset.id === assetId)
     if (selectedAsset) {
-        formData.value.purchaseDate = selectedAsset.purchaseDate ? new Date(selectedAsset.purchaseDate) : new Date()
+        formData.value.purchase_date = selectedAsset.purchase_date ? new Date(selectedAsset.purchase_date) : new Date()
     }
 }
 
 // Reset form fields and close dialog
 const resetForm = () => {
     selectedAssetId.value = ''
-    formData.value.purchaseDate = ''
+    formData.value.purchase_date = ''
     formRef.value?.resetFields()
     close()
 }
 
-// Close dialog by emitting visibility update
+// Close dialog
 const close = () => {
     emit('update:visible', false)
 }
@@ -99,17 +98,17 @@ const submitForm = () => {
         return
     }
 
-    if (!formData.value.purchaseDate) {
+    if (!formData.value.purchase_date) {
         ElMessage.warning('Please select a purchase date')
         return
     }
 
     const updatedAsset = {
         id: selectedAssetId.value,
-        purchaseDate: formData.value.purchaseDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        purchase_date: formData.value.purchase_date.toISOString().split('T')[0], // Format as YYYY-MM-DD
     }
 
-    // Emit updated asset data to parent component
+    // Emit updated asset data
     emit('submit', updatedAsset)
     resetForm()
 }
@@ -121,3 +120,4 @@ const submitForm = () => {
     justify-content: flex-end;
 }
 </style>
+```

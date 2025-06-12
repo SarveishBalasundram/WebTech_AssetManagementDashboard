@@ -76,6 +76,21 @@ const handleAssetWarrantyUpdate = async (updatedAsset) => {
   }
 }
 
+const handleAssetUpdate = async (updatedAsset) => {
+  console.log('Dashboard received update-asset:', updatedAsset)
+  try {
+    await emit('update-assetDate', updatedAsset) // Changed to update-assetDate
+    console.log('Dashboard passed update-assetDate to App.vue')
+  } catch (error) {
+    console.error('Error handling asset update:', error)
+    ElNotification({
+      title: 'Error',
+      message: 'Failed to update asset purchase date',
+      type: 'error'
+    })
+  }
+}
+
 // Computed property to get unique departments count
 const uniqueDepartmentsCount = computed(() => {
   if (!props.assetData.departments) return 0;
