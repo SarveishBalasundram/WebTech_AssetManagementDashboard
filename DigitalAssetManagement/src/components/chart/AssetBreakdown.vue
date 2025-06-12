@@ -12,10 +12,10 @@
     <div v-if="series.length === 0" class="error-message">
       No data available for the chart. Check assetData.assets purchase dates.
     </div>
-    <!-- Render bar chart using VueApexCharts when data is available -->
+    <!-- Render bar chart using VueApexCharts -->
     <apexchart v-if="series.length > 0" type="bar" height="300" :options="chartOptions" :series="series"
       class="chart-container" />
-    <!-- Modal component for editing asset purchase dates -->
+    <!-- Edit Modal -->
     <EditAssetDate :visible="editModalVisible" @update:visible="val => editModalVisible = val"
       :assets="props.assetData.assets" @submit="handleAssetUpdate" />
   </div>
@@ -24,11 +24,10 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
-import { ElNotification } from 'element-plus'
 import EditAssetDate from '../modal/EditAssetDate.vue'
 import assetService from '../../api/assetService'
 
-// Define component props
+// Define props
 const props = defineProps({
   assetData: {
     type: Object,
@@ -139,7 +138,7 @@ const chartOptions = computed(() => ({
   colors: ['#008FFB'],
 }))
 
-// Debug data
+// Debug chart data
 watch(series, (newSeries) => {
   console.log('Series updated:', newSeries)
   console.log('Purchase Years:', purchaseYears.value)
@@ -152,11 +151,7 @@ const editModalVisible = ref(false)
 // Open the edit modal
 const openEditModal = () => {
   if (!props.assetData.assets || props.assetData.assets.length === 0) {
-    ElNotification({
-      title: 'Warning',
-      message: 'No assets available to edit',
-      type: 'warning'
-    })
+    console.warn('No assets available to edit')
     return
   }
   editModalVisible.value = true
@@ -177,21 +172,15 @@ const handleAssetUpdate = async (updatedAsset) => {
       purchase_date: purchaseDate
     }
 
+    console.log('Calling assetService.updateAssetPurchaseDate:', normalizedAsset)
     const updated = await assetService.updateAssetPurchaseDate(normalizedAsset.id, normalizedAsset.purchase_date)
     console.log('API response:', updated)
+    console.log('Emitting update-asset:', updated)
     emit('update-asset', updated)
-    ElNotification({
-      title: 'Success',
-      message: 'Asset purchase date updated successfully',
-      type: 'success'
-    })
   } catch (error) {
     console.error('Error handling asset update:', error)
-    ElNotification({
-      title: 'Error',
-      message: error.response?.data?.error || 'Failed to update asset purchase date',
-      type: 'error'
-    })
+    console.error('Error response:', error.response?.data)
+    throw error // Rethrow to let App.vue handle notifications
   }
 }
 </script>
