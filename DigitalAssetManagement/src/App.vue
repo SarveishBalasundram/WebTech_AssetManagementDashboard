@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import Dashboard from './components/Dashboard.vue'
+import Sidebar from './components/Sidebar.vue'
 import assetService from './api/assetService'
 import { ElNotification } from 'element-plus'
 import './assets/app.css';
@@ -200,9 +201,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-container class="app-container">
+  <el-container class="app-container" style="height: 100vh;">
     <!-- HEADER -->
-    <el-header height="60px" class="app-header">
+    <el-header height="60px" class="app-header" style="position: sticky; top: 0; z-index: 1000;">
       <div class="header-content">
         <div class="logo-section">
           <img src="/images/companyLogo.png" class="logo" alt="Company Logo">
@@ -212,15 +213,55 @@ onMounted(() => {
     </el-header>
 
     <!-- MAIN CONTENT -->
-    <el-main class="app-main">
-      <Dashboard 
-        :assetData="assetData" 
-        @update-asset="updateAsset" 
-        @update-assetDept="updateAssetDept" 
-        @update-assetValue="updateAssetValue"
-        @update-assetWarranty="updateAssetWarranty"
-        @update-assetDate="updateAssetDate"
-      />
-    </el-main>
+    <el-container style="height: calc(100vh - 60px);">
+      <el-aside width="220px" class="no-scroll-sidebar">
+        <Sidebar />
+      </el-aside>
+      <el-main class="app-main" style="overflow-y: auto; padding: 20px;">
+  <router-view 
+    v-slot="{ Component }"
+  >
+    <component 
+      :is="Component" 
+      :assetData="assetData"
+      @update-asset="updateAsset" 
+      @update-assetDept="updateAssetDept" 
+      @update-assetValue="updateAssetValue"
+      @update-assetWarranty="updateAssetWarranty"
+      @update-assetDate="updateAssetDate"
+    />
+  </router-view>
+</el-main>
+
+  </el-container>
   </el-container>
 </template>
+
+<style>
+/* Disable scrolling for sidebar */
+.no-scroll-sidebar {
+  overflow: hidden !important;
+}
+
+/* Also ensure the Sidebar component doesn’t trigger overflow */
+.sidebar {
+  width: 220px;
+  height: 100%;
+  background-color: #2c3e50;
+  padding-top: 20px;
+  overflow: hidden;
+}
+
+.el-menu {
+  width: 100%;
+  border-right: none;
+  overflow: hidden;
+}
+
+.el-menu-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+</style>
