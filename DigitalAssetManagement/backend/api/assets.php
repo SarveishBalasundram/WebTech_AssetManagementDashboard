@@ -106,17 +106,31 @@ try {
                 ':department' => $input['department'],
                 ':status' => $input['status'] ?? 'In Use',
                 ':purchase_date' => $input['purchaseDate'] ?? date('Y-m-d'),
-                ':warranty_expiry' => $input['warrantyExpiry'] ?? null,
+                ':warranty_expiry' => $input['warranty_expiry'] ?? null,
                 ':value' => $input['value'] ?? 0,
-                ':usage_type' => $input['usageType'] ?? 'General'
+                ':usage_type' => $input['usage_type'] ?? 'General'
             ]);
 
             $id = $pdo->lastInsertId();
-            http_response_code(201);
-            echo json_encode([
-                'id' => $id,
-                'message' => 'Asset created successfully'
-            ]);
+
+            // Fetch the newly created asset with category_name
+            $stmt = $pdo->prepare("
+                SELECT a.*, c.name AS category_name 
+                FROM asset a 
+                LEFT JOIN category c ON a.category_id = c.id 
+                WHERE a.id = :id
+            ");
+            $stmt->execute([':id' => $id]);
+            $newAsset = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($newAsset) {
+                http_response_code(201);
+                echo json_encode($newAsset);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to fetch created asset']);
+            }
+            
             break;
 
         case 'PUT':
@@ -188,9 +202,9 @@ try {
 
         case 'PATCH':
             if (!$id) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Asset ID required']);
-    break;
+              http_response_code(400);
+              echo json_encode(['error' => 'Asset ID required']);
+              break;
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
@@ -268,10 +282,14 @@ break;
             echo json_encode(['message' => 'Asset deleted successfully']);
             break;
 
-        default:
+            default:
             http_response_code(405);
-            echo json_encode(['error' => 'Method not allowed']);
+            echo json_encode([
+                'error' => 'Method not allowed',
+            ]);
+            error_log("405 Method Not Allowed: " . $_SERVER['REQUEST_METHOD']);
             break;
+        
     }
 
 } catch (PDOException $e) {
