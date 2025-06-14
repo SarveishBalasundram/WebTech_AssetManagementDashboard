@@ -17,6 +17,7 @@ import AssetBreakdown from './chart/AssetBreakdown.vue'
 import AssetValueByDept from './chart/AssetValueByDept.vue'
 import WarrantyExpiryTable from './chart/WarrantyExpiryTable.vue'
 import TotalAssetValueByUsageChart from './chart/TotalAssetValueByUsageChart.vue'
+import Sidebar from './Sidebar.vue'
 import { ElNotification } from 'element-plus'
 import { computed } from 'vue'
 
@@ -117,6 +118,7 @@ const uniqueDepartmentsCount = computed(() => {
 </script>
 
 <template>
+  <!-- Main Content-->
   <div class="dashboard">
     <!-- Dashboard Title -->
     <div class="mb-6">
