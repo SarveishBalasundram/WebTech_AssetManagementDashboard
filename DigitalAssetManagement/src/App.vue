@@ -1,10 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import Dashboard from './components/Dashboard.vue'
 import Sidebar from './components/Sidebar.vue'
 import assetService from './api/assetService'
 import { ElNotification } from 'element-plus'
 import './assets/app.css';
+
+const route = useRoute()
 
 const assetData = ref({
   assets: [],
@@ -14,11 +17,8 @@ const assetData = ref({
   totalValue: 0
 })
 
-const isLoading = ref(false)
-
 // Fetch initial data
 const fetchData = async () => {
-  isLoading.value = true
   try {
     const [assets, categories, departments] = await Promise.all([
       assetService.getAssets(),
@@ -33,13 +33,6 @@ const fetchData = async () => {
       departments,
       totalValue: assets.reduce((sum, asset) => sum + (parseFloat(asset.value) || 0), 0)
     }
-    
-    console.log('Data fetched successfully:', {
-      assetsCount: assets.length,
-      categoriesCount: categories.length,
-      departmentsCount: departments.length,
-      totalValue: assetData.value.totalValue
-    })
   } catch (error) {
     console.error('Error loading initial data:', error)
     ElNotification({
@@ -47,33 +40,18 @@ const fetchData = async () => {
       message: 'Failed to load asset data',
       type: 'error'
     })
-  } finally {
-    isLoading.value = false
   }
 }
 
-// NEW: Handle dashboard refresh requests
-const handleRefreshDashboard = async () => {
-  console.log('🔄 Refreshing dashboard data from App.vue...')
-  try {
-    await fetchData()
-    ElNotification({
-      title: 'Success',
-      message: 'Dashboard data refreshed successfully',
-      type: 'success',
-      duration: 2000
-    })
-  } catch (error) {
-    console.error('Failed to refresh dashboard data:', error)
-    ElNotification({
-      title: 'Error',
-      message: 'Failed to refresh dashboard data',
-      type: 'error'
-    })
+// Watch for route changes and refresh data when navigating to dashboard
+watch(() => route.path, (newPath) => {
+  if (newPath === '/' || newPath === '/dashboard') {
+    fetchData()
   }
-}
+})
 
 // Update asset department
+// In App.vue's updateAsset method
 const updateAsset = async (updatedAsset) => {
   try {
     // Use the standard update method instead of specialized endpoint
@@ -250,28 +228,22 @@ onMounted(() => {
         <Sidebar />
       </el-aside>
       <el-main class="app-main" style="overflow-y: auto; padding: 20px;">
-        <!-- Loading overlay -->
-        <div v-if="isLoading" class="loading-overlay">
-          <el-loading :loading="true" text="Loading dashboard data..." />
-        </div>
-        
-        <router-view 
-          v-slot="{ Component }"
-        >
-          <component 
-            :is="Component" 
-            :assetData="assetData"
-            :loading="isLoading"
-            @update-asset="updateAsset" 
-            @update-assetDept="updateAssetDept" 
-            @update-assetValue="updateAssetValue"
-            @update-assetWarranty="updateAssetWarranty"
-            @update-assetDate="updateAssetDate"
-            @refresh-dashboard-data="handleRefreshDashboard"
-          />
-        </router-view>
-      </el-main>
-    </el-container>
+  <router-view 
+    v-slot="{ Component }"
+  >
+    <component 
+      :is="Component" 
+      :assetData="assetData"
+      @update-asset="updateAsset" 
+      @update-assetDept="updateAssetDept" 
+      @update-assetValue="updateAssetValue"
+      @update-assetWarranty="updateAssetWarranty"
+      @update-assetDate="updateAssetDate"
+    />
+  </router-view>
+</el-main>
+
+  </el-container>
   </el-container>
 </template>
 
@@ -302,17 +274,4 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 
-/* Loading overlay styles */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 </style>
